@@ -20,11 +20,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Arquivo {
-
 	public enum Tipo{
 		ARQUIVO,PASTA,LINK
 	}
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
