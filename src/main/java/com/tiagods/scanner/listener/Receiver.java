@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.tiagods.scanner.model.Arquivo;
 import com.tiagods.scanner.model.Arquivo.Tipo;
-import com.tiagods.scanner.repository.ArquivoRepository;
+import com.tiagods.scanner.repository.Arquivos;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Receiver {
 	
 	@Autowired
-	private ArquivoRepository arquivos;
+	private Arquivos arquivos;
 	
 	private CountDownLatch latch = new CountDownLatch(1);
 	

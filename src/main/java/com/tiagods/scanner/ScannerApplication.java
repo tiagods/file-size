@@ -1,30 +1,24 @@
 package com.tiagods.scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.tiagods.scanner.config.SwaggerConfig;
+import com.tiagods.scanner.services.ArquivoService;
 
 @SpringBootApplication
-public class ScannerApplication extends AbstractAnnotationConfigDispatcherServletInitializer {
-	
-	public static void main(String[] args) {
+@EnableScheduling
+public class ScannerApplication implements CommandLineRunner{
+	public static void main(String[] args){
 		SpringApplication.run(ScannerApplication.class, args);
 	}
 
+	@Autowired ArquivoService servico;
 	@Override
-	protected Class<?>[] getRootConfigClasses() {
-		return new Class[] { ScannerApplication.class, SwaggerConfig.class };
+	public void run(String... args) throws Exception {
+		servico.resetar();
 	}
-
-	@Override
-	protected Class<?>[] getServletConfigClasses() {
-		return null;
-	}
-
-	@Override
-	protected String[] getServletMappings() {
-		return new String[] { "/" };
-	}
+	
 }
