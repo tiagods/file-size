@@ -9,7 +9,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 public class SchedulingConfigurerConfiguration implements SchedulingConfigurer {
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(2);
+        taskScheduler.setPoolSize(1);
         taskScheduler.initialize();
         taskRegistrar.setTaskScheduler(taskScheduler);
     }

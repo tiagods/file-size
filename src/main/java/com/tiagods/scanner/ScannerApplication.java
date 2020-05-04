@@ -1,24 +1,30 @@
 package com.tiagods.scanner;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.tiagods.scanner.services.ArquivoService;
 
 @SpringBootApplication
 @EnableScheduling
-public class ScannerApplication implements CommandLineRunner{
+@Slf4j
+public class ScannerApplication extends SpringBootServletInitializer implements CommandLineRunner {
+
 	public static void main(String[] args){
 		SpringApplication.run(ScannerApplication.class, args);
 	}
 
-	@Autowired ArquivoService servico;
 	@Override
 	public void run(String... args) throws Exception {
-		servico.resetar();
+	}
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(ScannerApplication.class);
 	}
 	
 }

@@ -1,16 +1,14 @@
 package com.tiagods.scanner.services;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import com.tiagods.scanner.model.PathJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -34,42 +32,40 @@ public class ArquivoService {
 	final static List<String> namesDenied = Arrays.asList("Thumbs.db","~$");
 	
 	@Async
-	public void iniciarScanner(final Path file){
-		Runnable run = new Runnable() {
-			public void run() {
-				try {
-					Files.walkFileTree(file, new SimpleFileVisitor<Path> (){
-					    @Override
-					    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					    	String name = file.getFileName().toString();
-					    	log.debug(name);
-					    	Optional<String> opt = namesDenied.stream()
-					    			.map(c->c.toUpperCase())
-					    			.filter(f->name.toUpperCase().startsWith(f))
-					    			.findFirst();
-					    	if(!opt.isPresent()) {
-					    		subscriber.enviar(file.toString());
-					    	}
-							return FileVisitResult.CONTINUE;
-					    }
-					});
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+	public void iniciarScanner(final PathJob job){
+		Runnable run = () -> {
+			try {
+				long start = System.currentTimeMillis();
+				log.info("Start Job");
+				Path path = Paths.get(job.getPath());
+				Files.walkFileTree(path, new SimpleFileVisitor<Path> (){
+					@Override
+					public FileVisitResult visitFile(Path file1, BasicFileAttributes attrs) throws IOException {
+						String name = file1.getFileName().toString();
+						log.debug(name);
+						Optional<String> opt = namesDenied.stream()
+								.map(c->c.toUpperCase())
+								.filter(f->name.toUpperCase().startsWith(f))
+								.findFirst();
+						if(!opt.isPresent() && name.length()>=job.getSize()) {
+							subscriber.enviar(file1.toString());
+						}
+						return FileVisitResult.CONTINUE;
+					}
+				});
+				log.info("End of process: {}", System.currentTimeMillis()-start);
+			} catch (IOException e) {
+				log.error(e.getMessage());
 			}
 		};
 		CompletableFuture.runAsync(run);
 	}
-	@Async
 	public void resetar() {
-		Runnable run = new Runnable() {
-			@Override
-			public void run() {
-				long start = System.currentTimeMillis();
-				log.info("Solicitação de limpeza solicitada");
-				arquivos.apagarRegistros();
-				log.info("Solicitação de limpeza concluida: {}", System.currentTimeMillis()-start);
-			}
+		Runnable run = () -> {
+			long start = System.currentTimeMillis();
+			log.info("Solicitação de limpeza solicitada");
+			arquivos.apagarRegistros();
+			log.info("Solicitação de limpeza concluida: {}", System.currentTimeMillis()-start);
 		};
 		CompletableFuture.runAsync(run);
 	}

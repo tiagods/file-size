@@ -2,6 +2,7 @@ package com.tiagods.scanner.scheduler;
 
 import java.nio.file.Paths;
 
+import com.tiagods.scanner.model.PathJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,7 @@ public class SearchJob{
 	
 	@Scheduled(cron = "${agendamento.padrao}")
 	public void execute(){
-		long start = System.currentTimeMillis();
-		log.info("Start Job");
-		arquivos.iniciarScanner(Paths.get("//plkserver/Clientes"));
-		log.info("End of process: {}", System.currentTimeMillis()-start);
+		PathJob job = new PathJob("//plkserver/Clientes",200);
+		arquivos.iniciarScanner(job);
 	}
 }

@@ -1,18 +1,11 @@
 package com.tiagods.scanner.resource;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javax.validation.Valid;
 
+import com.tiagods.scanner.model.PathJob;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tiagods.scanner.services.ArquivoService;
 
@@ -23,16 +16,14 @@ public class ArquivosResources {
 	@Autowired
 	ArquivoService arquivos;
 	
-	@PostMapping("/monitorar")
-	public ResponseEntity<?> scanner(@RequestBody @Valid String pasta) {
-		Path path = Paths.get(pasta);
-		if(Files.exists(path) && Files.isDirectory(path)) {
-			arquivos.iniciarScanner(path);
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"message\":\"Diretorio inválido\"}");
-		}
+	@PostMapping(value = "/monitorar")
+	public ResponseEntity<?> scanner(@RequestBody @Valid PathJob job) {
+		arquivos.iniciarScanner(job);
 		return ResponseEntity.ok().build();
+	}
+	@GetMapping
+	public ResponseEntity<?> next(){
+		return ResponseEntity.noContent().build();
 	}
 
 }

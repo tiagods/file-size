@@ -3,6 +3,7 @@ package com.tiagods.scanner.listener;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,18 @@ public class Receiver {
 	public void traduzirEnviar(String value) {
 		Path path = Paths.get(value);
 		if(Files.exists(path)){
+			log.debug("Capturando nova mensagem: {}", value);
 			Arquivo ar = new Arquivo();
 			ar.setAbsoluto(path.toString());
 			ar.setTamanho(path.toString().length());
 			ar.setNome(path.getFileName().toString());
 			ar.setTipo(Files.isDirectory(path)?Tipo.PASTA:Tipo.ARQUIVO);
-			arquivos.findByAbsoluto(ar.getAbsoluto()).ifPresentOrElse(c->{
-					ar.setId(c.getId()); 
-					arquivos.save(ar);}, 
-					()->arquivos.save(ar));
+
+			Optional<Arquivo> optional = arquivos.findByAbsoluto(ar.getAbsoluto());
+			if(optional.isPresent()){
+				ar.setId(optional.get().getId());
+			}
+			arquivos.save(ar);
 		}
 	}
 	
